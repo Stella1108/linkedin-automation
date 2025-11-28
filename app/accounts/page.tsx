@@ -601,10 +601,231 @@ export default function AccountsPage() {
                 </button>
               </div>
             </div>
-
-            {/* Modal Content - Keep the same as before */}
+            {/* Modal Content */}
             <div className="p-6 max-h-[60vh] overflow-y-auto">
-              {/* ... rest of modal content remains the same ... */}
+              {/* Message Alert */}
+              {message && (
+                <div className={`mb-6 p-4 rounded-lg border ${
+                  message.type === 'success' 
+                    ? 'bg-green-50 border-green-200 text-green-800' 
+                    : 'bg-red-50 border-red-200 text-red-800'
+                }`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      {message.type === 'success' ? (
+                        <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                      <span className="font-medium">{message.text}</span>
+                    </div>
+                    <button 
+                      onClick={() => setMessage(null)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 1: Connect Account */}
+              {activeTab === 'connect' && (
+                <div className="space-y-6">
+                  <div className="text-center">
+                    <p className="text-gray-600">Enter your LinkedIn account details</p>
+                  </div>
+
+                  <form onSubmit={handleConnectSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Full Name *</label>
+                        <input
+                          name="fullName"
+                          type="text"
+                          placeholder="John Doe"
+                          value={connectForm.fullName}
+                          onChange={handleConnectChange}
+                          required
+                          className="w-full h-12 rounded-xl border border-gray-300 bg-white px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Email *</label>
+                        <input
+                          name="email"
+                          type="email"
+                          placeholder="your@email.com"
+                          value={connectForm.email}
+                          onChange={handleConnectChange}
+                          required
+                          className="w-full h-12 rounded-xl border border-gray-300 bg-white px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">Location</label>
+                      <input
+                        name="location"
+                        type="text"
+                        placeholder="City, Country"
+                        value={connectForm.location}
+                        onChange={handleConnectChange}
+                        className="w-full h-12 rounded-xl border border-gray-300 bg-white px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      />
+                    </div>
+
+                    <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                      <p className="text-sm text-blue-700">
+                        🔗 After clicking Connect, a browser window will open where you can login to your LinkedIn account. 
+                        Once logged in, the connection will be established automatically.
+                      </p>
+                    </div>
+                    
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 flex items-center justify-center"
+                    >
+                      {isLoading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Connecting...
+                        </>
+                      ) : (
+                        'Connect LinkedIn Account'
+                      )}
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {/* Tab 2: Automation Settings */}
+              {activeTab === 'automation' && (
+                <div className="space-y-6">
+                  <div className="text-center">
+                    <p className="text-gray-600">Configure daily limits for your LinkedIn automation</p>
+                  </div>
+
+                  {/* Account Selection */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">Select LinkedIn Account</label>
+                    <select
+                      value={selectedAccount}
+                      onChange={(e) => setSelectedAccount(e.target.value)}
+                      className="w-full h-12 rounded-xl border border-gray-300 bg-white px-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                      <option value="">Choose an account</option>
+                      {accounts.filter(acc => acc.status === 'connected').map(account => (
+                        <option key={account.id} value={account.id}>
+                          {account.full_name} ({account.email})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {selectedAccount && (
+                    <form onSubmit={handleAutomationSubmit} className="space-y-4">
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-gray-700">
+                            Profile Views Per Day
+                            <span className="text-xs text-gray-500 ml-1">(Max: 100)</span>
+                          </label>
+                          <input
+                            name="views_per_day"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={automationForm.views_per_day}
+                            onChange={handleAutomationChange}
+                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                          />
+                          <div className="text-center text-sm font-medium text-blue-600">
+                            {automationForm.views_per_day} views per day
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-gray-700">
+                            Messages Per Day
+                            <span className="text-xs text-gray-500 ml-1">(Max: 50)</span>
+                          </label>
+                          <input
+                            name="messages_per_day"
+                            type="range"
+                            min="0"
+                            max="50"
+                            value={automationForm.messages_per_day}
+                            onChange={handleAutomationChange}
+                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                          />
+                          <div className="text-center text-sm font-medium text-green-600">
+                            {automationForm.messages_per_day} messages per day
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-gray-700">
+                            Connection Requests Per Day
+                            <span className="text-xs text-gray-500 ml-1">(Max: 30)</span>
+                          </label>
+                          <input
+                            name="connections_per_day"
+                            type="range"
+                            min="0"
+                            max="30"
+                            value={automationForm.connections_per_day}
+                            onChange={handleAutomationChange}
+                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                          />
+                          <div className="text-center text-sm font-medium text-purple-600">
+                            {automationForm.connections_per_day} connections per day
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-4 rounded-xl border border-orange-200">
+                        <p className="text-sm text-orange-700">
+                          ⚡ These settings will control your daily automation limits. Start with conservative numbers to avoid detection.
+                        </p>
+                      </div>
+
+                      <div className="flex gap-3">
+                        <button
+                          type="button"
+                          onClick={closeModal}
+                          className="flex-1 h-12 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-xl font-semibold text-sm transition-all"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={isLoading}
+                          className="flex-1 h-12 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 flex items-center justify-center"
+                        >
+                          {isLoading ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Saving...
+                            </>
+                          ) : (
+                            'Save Settings'
+                          )}
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
